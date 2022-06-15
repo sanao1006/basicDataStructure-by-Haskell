@@ -6,7 +6,7 @@ initStack :: IO(Stack a)
 initStack = Stack <$> (newIORef [] :: IO(IORef [a]))
 
 pushStack :: Stack a -> a -> IO()
-pushStack st x = modifyIORef' (stack st) (++[x])
+pushStack st x = modifyIORef' (stack st) (<>[x])
 
 popStack :: Stack a -> IO()
 popStack st = modifyIORef (stack st) init
