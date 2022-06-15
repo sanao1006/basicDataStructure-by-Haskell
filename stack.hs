@@ -27,8 +27,8 @@ sizeStack st = pure(length) <*> readIORef(stack st)
 topStack :: Stack a -> IO a
 topStack st = pure(last) <*> readIORef(stack st)
 
-readStack :: Stack a -> IO [a]
-readStack st = readIORef(stack st)
+debugStack :: Show a => Stack a -> IO ()
+debugStack st = print =<< readIORef(stack st)
 
 main = do
     a <- initStack
@@ -42,7 +42,7 @@ main = do
     print =<< sizeStack a
     print =<< emptyStack a
     pushStack a 2652690
-    print =<< readStack a
+    debugStack a
 {-
 [100,1,80]
 [100]
