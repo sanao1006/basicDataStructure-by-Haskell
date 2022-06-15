@@ -12,9 +12,7 @@ popStack :: Stack a -> IO()
 popStack st = modifyIORef (stack st) init
 
 emptyStack :: Stack a -> IO Bool
-emptyStack st = do
-    b <- readIORef(stack st)
-    pure $ emptyStack' b
+emptyStack st = pure(emptyStack') <*> readIORef(stack st)
         where
             emptyStack' :: [a] -> Bool
             emptyStack' b
