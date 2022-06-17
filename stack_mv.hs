@@ -49,12 +49,15 @@ emptyQueue que = do
   if VU.null stack then pure True 
   else pure False 
 
-
 type Deque m a = MutVar m(Seq.Seq a)
 
 initDeque :: (PrimMonad m) => m(Deque (PrimState m) a)
 initDeque = newMutVar (Seq.empty)
 {-# INLINE initDeque #-}
+
+deqSingleton :: (PrimMonad m) => a -> m(Deque(PrimState m)a)
+deqSingleton x = newMutVar(Seq.singleton x)
+{-# INLINE deqSingleton #-}
 
 addLast :: (PrimMonad m) => Deque(PrimState m)a -> a -> m()
 addLast deq x = modifyMutVar deq(flip(Seq.|>)x)
@@ -96,10 +99,13 @@ contains deq x = do
 		Nothing -> pure False
 {-# INLINE contains #-}
 
-seqLen :: (PrimMonad m) => Deque(PrimState m)a -> m Int
-seqLen deq = Seq.length <$> readMutVar deq
-{-# INLINE seqLen #-}
+deqLen :: (PrimMonad m) => Deque(PrimState m)a -> m Int
+deqLen deq = Seq.length <$> readMutVar deq
+{-# INLINE deqLen #-}
 
+deqIns :: (PrimMonad m) => Deque(PrimState m) a -> Int -> a -> m()
+deqIns deq i x = modifyMutVar deq(Seq.insertAt i x)
+{-# INLINE deqIns #-}
 
 main :: IO ()
 main = do
