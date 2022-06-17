@@ -49,33 +49,44 @@ emptyQueue que = do
   if VU.null stack then pure True 
   else pure False 
 
+
 type Deque m a = MutVar m(Seq.Seq a)
 
 initDeque :: (PrimMonad m) => m(Deque (PrimState m) a)
 initDeque = newMutVar (Seq.empty)
+{-# INLINE initDeque #-}
 
 addLast :: (PrimMonad m) => Deque(PrimState m)a -> a -> m()
 addLast deq x = modifyMutVar deq(flip(Seq.|>)x)
+{-# INLINE addLast #-}
 
 addFirst :: (PrimMonad m) => Deque(PrimState m)a -> a -> m()
 addFirst deq x = modifyMutVar deq((Seq.<|)x)
+{-# INLINE addFirst #-}
 
 popLast :: (PrimMonad m) => Deque(PrimState m)a -> m()
 popLast deq = modifyMutVar deq(seqInit.Seq.viewr)
 	where
     	seqInit(seqRest Seq.:> seqLast) = seqRest
+{-# INLINE popLast #-}
+
 popFirst :: (PrimMonad m) => Deque(PrimState m)a -> m()
 popFirst deq = modifyMutVar deq(seqTail.Seq.viewl)
 	where
     	seqTail(seqTop Seq.:< seqRest) = seqRest
+{-# INLINE popFirst #-}
+
 peekFirst :: (PrimMonad m) => Deque(PrimState m)a -> m a
 peekFirst deq = seqHead . Seq.viewl <$> readMutVar deq 
     where
     	seqHead(seqTop Seq.:< seqRest) = seqTop
+{-# INLINE peekFirst #-}
+
 peekLast :: (PrimMonad m) => Deque(PrimState m)a -> m a
 peekLast deq = seqLast . Seq.viewr <$> readMutVar deq 
     where
     	seqLast(seqRest Seq.:> seqEnd) = seqEnd
+{-# INLINE peekLast #-}
 
 contains :: (PrimMonad m, Eq a) => Deque(PrimState m)a -> a -> m Bool
 contains deq x = do
@@ -83,9 +94,11 @@ contains deq x = do
 	case ((Seq.elemIndexL)x a) of
 		Just _ -> pure True
 		Nothing -> pure False
+{-# INLINE contains #-}
 
 seqLen :: (PrimMonad m) => Deque(PrimState m)a -> m Int
 seqLen deq = Seq.length <$> readMutVar deq
+{-# INLINE seqLen #-}
 
 
 main :: IO ()
